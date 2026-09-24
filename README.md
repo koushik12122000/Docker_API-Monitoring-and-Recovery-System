@@ -324,19 +324,6 @@ Through this project, I gained hands-on experience with:
 
 ---
 
-## 📸 Screenshots
-
-### Monitoring Dashboard
-
-```text
-Add Screenshot Here
-```
-
-### Failure Detection Logs
-
-```text
-Add Screenshot Here
-```
 
 
 
