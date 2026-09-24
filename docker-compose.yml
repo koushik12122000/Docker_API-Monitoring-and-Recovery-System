@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  # Target Service: Unstructured Document Processing API
+  unstructured-api:
+    image: downloads.unstructured.io/unstructured-io/unstructured-api:latest
+    container_name: unstructured-api
+    ports:
+      - "8000:8000"
+    environment:
+      - UNSTRUCTURED_PARALLEL_MODE_ENABLED=true
+      - UNSTRUCTURED_PARALLEL_MODE_THREADS=3
+      - UNSTRUCTURED_MEMORY_FREE_MINIMUM_MB=0
+      - UNSTRUCTURED_PARALLEL_MODE_URL=http://localhost:8000/general/v0/general
+    command: ["--port", "8000", "--host", "0.0.0.0"]
+    restart: unless-stopped
+
+  # Automated Health Monitoring & Self-Healing Service
+  api-monitor:
+    build:
+      context: ./monitor
+    container_name: api-monitor
+    depends_on:
+      - unstructured-api
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./monitor/api_monitor.log:/app/api_monitor.log
+    env_file:
+      - ./monitor/.env
+    environment:
+      - API_URL=http://unstructured-api:8000/general/v0/general
+      - CONTAINER_NAME=unstructured-api
